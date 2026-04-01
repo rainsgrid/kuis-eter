@@ -11,7 +11,7 @@
         .header-subtitle { text-align: center; color: #6c757d; font-size: 14px; margin-bottom: 30px; }
         .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         .btn-outline { background-color: transparent; border: 1px solid #0d6efd; color: #0d6efd; padding: 15px; border-radius: 6px; cursor: pointer; font-size: 12px; text-align: left; font-weight: 500; transition: 0.2s; height: 100%; display: flex; align-items: center; }
-        .btn-outline:hover { background-color: #e9ecef; }
+        .btn-outline:hover { background-color: #f0f7ff; }
         .btn-solid { background-color: #0d6efd; color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: bold; width: 100%; text-align: center; transition: 0.2s; }
         .btn-solid:hover { background-color: #0b5ed7; }
         .btn-prev { background-color: #6c757d; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; }
@@ -26,7 +26,7 @@
         .options-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
         .option-item { display: flex; align-items: flex-start; padding: 12px 15px; border: 1px solid #ced4da; border-radius: 6px; cursor: pointer; transition: 0.2s; line-height: 1.4; }
         .option-item:hover { background-color: #f8f9fa; }
-        .option-item input { margin-right: 15px; margin-top: 3px; transform: scale(1.2); flex-shrink: 0; }
+        .option-item input { margin-right: 15px; margin-top: 3px; transform: scale(1.2); flex-shrink: 0; pointer-events: none; }
         .option-item.selected { border-color: #0d6efd; background-color: #f0f7ff; }
         .quiz-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
         .result-title { text-align: center; color: #0d6efd; font-size: 24px; font-weight: bold; margin-bottom: 25px; }
@@ -70,14 +70,16 @@
     <div class="score-card">
         <div class="score-row"><span>Topik:</span><span id="score-category-name">...</span></div>
         <div class="score-row total"><span>Total Skor PG:</span><span id="score-text-total">0/0</span></div>
+        <div style="font-size: 12px; color: #666; margin-top: 10px;">*Soal Esai hanya untuk review mandiri.</div>
     </div>
     <div id="review-container"></div>
     <button class="btn-solid" onclick="location.reload()" style="margin-top: 20px;">Kembali ke Menu Utama</button>
 </div>
 
 <script>
+// Database tetap 102 soal sesuai input user
 const databaseSoal = [
-    // === PPT: GLOBAL ENERGY OUTLOOK (18 SOAL) ===
+    // === PPT: GLOBAL ENERGY OUTLOOK ===
     { kategori: "PPT: Global Energy Outlook", tipe: "pg", pertanyaan: "Berdasarkan Global Energy Outlook 2026, apa dampak utama dari pertumbuhan pesat sektor digital dan kendaraan listrik terhadap sistem energi global?", pilihan: ["A. Menurunkan biaya produksi surya.", "B. Meningkatkan permintaan listrik secara drastis & tantangan stabilitas.", "C. Mempercepat transisi ke batubara bersih.", "D. Mengurangi kebutuhan energi laut."], kunci_jawaban: "B. Meningkatkan permintaan listrik secara drastis & tantangan stabilitas." },
     { kategori: "PPT: Global Energy Outlook", tipe: "pg", pertanyaan: "Mengapa diversifikasi ke energi laut penting di tengah intermitensi surya dan angin?", pilihan: ["A. Surya tidak cocok di tropis.", "B. Sifat intermitensi butuh sumber stabil (base load) seperti arus laut.", "C. Biaya turbin laut paling murah.", "D. Satu-satunya sumber Net Zero."], kunci_jawaban: "B. Sifat intermitensi butuh sumber stabil (base load) seperti arus laut." },
     { kategori: "PPT: Global Energy Outlook", tipe: "pg", pertanyaan: "Apa target awal bauran EBT bagi Indonesia dalam upaya mencapai Net Zero Emission?", pilihan: ["A. Mencapai bauran 40%.", "B. Menghapus 100% PLTD.", "C. Mencapai target bauran 23%.", "D. Hilirisasi industri hijau di Jawa."], kunci_jawaban: "C. Mencapai target bauran 23%." },
@@ -97,7 +99,7 @@ const databaseSoal = [
     { kategori: "PPT: Global Energy Outlook", tipe: "pg", pertanyaan: "Energi arus laut dinilai unggul secara ekologis karena...", pilihan: ["A. Jejak karbon rendah.", "B. Tidak butuh ruang laut.", "C. Membersihkan sampah plastik.", "D. Meningkatkan suhu air."], kunci_jawaban: "A. Jejak karbon rendah." },
     { kategori: "PPT: Global Energy Outlook", tipe: "pg", pertanyaan: "Apa hambatan ekonomi utama agar energi laut dapat bersaing dengan surya/angin?", pilihan: ["A. Minat perbankan kurang.", "B. Pajak ekspor turbin tinggi.", "C. Perlunya penurunan biaya energi secara signifikan.", "D. Subsidi fosil besar."], kunci_jawaban: "C. Perlunya penurunan biaya energi secara signifikan." },
 
-    // === PPT: SMALL ISLAND RESILIENCE (15 SOAL) ===
+    // === PPT: SMALL ISLAND RESILIENCE ===
     { kategori: "PPT: Small Island Resilience", tipe: "pg", pertanyaan: "Mengapa pemanfaatan energi laut krusial untuk kemandirian energi pulau-pulau kecil?", pilihan: ["A. Teknologi termurah.", "B. Menyediakan sumber stabil & mengurangi ketergantungan impor fosil.", "C. Pulau kecil kurang sinar matahari.", "D. Semua pulau punya gunung berapi."], kunci_jawaban: "B. Menyediakan sumber stabil & mengurangi ketergantungan impor fosil." },
     { kategori: "PPT: Small Island Resilience", tipe: "pg", pertanyaan: "Teknologi mana yang ideal sebagai 'base load' 24 jam di wilayah tropis?", pilihan: ["A. Wave Energy", "B. Tidal Energy", "C. OTEC", "D. Blue Energy"], kunci_jawaban: "C. OTEC" },
     { kategori: "PPT: Small Island Resilience", tipe: "pg", pertanyaan: "Dalam teknologi energi gelombang, perangkat apa yang umum digunakan untuk menangkap energi?", pilihan: ["A. Turbin sumbu horizontal.", "B. Bendungan pasang surut.", "C. Oscillating water columns dan point absorbers.", "D. Pipa air laut dalam."], kunci_jawaban: "C. Oscillating water columns dan point absorbers." },
@@ -114,7 +116,7 @@ const databaseSoal = [
     { kategori: "PPT: Small Island Resilience", tipe: "pg", pertanyaan: "Penggunaan energi laut membantu pulau kecil meningkatkan daya tarik bagi...", pilihan: ["A. Penambangan minyak.", "B. Investasi asing.", "C. Bandara internasional.", "D. Impor fosil."], kunci_jawaban: "B. Investasi asing." },
     { kategori: "PPT: Small Island Resilience", tipe: "esai", pertanyaan: "Bagaimana kaitan energi laut dengan Visi Net Zero di wilayah pulau rawan badai?", kunci_jawaban: "Platform tahan badai memungkinkan pasokan listrik stabil bagi negara kepulauan rawan bencana sekaligus memenuhi target pengurangan emisi." },
 
-    // === PPT: BAURAN EBT (15 SOAL) ===
+    // === PPT: BAURAN EBT ===
     { kategori: "PPT: Bauran Energi Terbarukan", tipe: "pg", pertanyaan: "Berapa target persentase Bauran EBT Indonesia pada tahun 2060?", pilihan: ["A. 13,9%", "B. 23%", "C. 50%", "D. 70-72%"], kunci_jawaban: "D. 70-72%" },
     { kategori: "PPT: Bauran Energi Terbarukan", tipe: "pg", pertanyaan: "Berapa realisasi aktual penggunaan EBT di Indonesia pada tahun 2024?", pilihan: ["A. 13,9%", "B. 19,5%", "C. 23%", "D. 41%"], kunci_jawaban: "A. 13,9%" },
     { kategori: "PPT: Bauran Energi Terbarukan", tipe: "pg", pertanyaan: "Negara Albania, Bhutan, dan Paraguay sukses 100% EBT karena sumber utama...", pilihan: ["A. Surya", "B. Hidro (PLTA)", "C. Nuklir", "D. Angin"], kunci_jawaban: "B. Hidro (PLTA)" },
@@ -131,7 +133,7 @@ const databaseSoal = [
     { kategori: "PPT: Bauran Energi Terbarukan", tipe: "pg", pertanyaan: "Proyek energi laut ORPC berlokasi di...", pilihan: ["A. California", "B. Florida", "C. Alaska", "D. Hawaii"], kunci_jawaban: "C. Alaska" },
     { kategori: "PPT: Bauran Energi Terbarukan", tipe: "pg", pertanyaan: "Negara dengan bauran EBT 99% berkat potensi air besar adalah...", pilihan: ["A. China", "B. Norway", "C. India", "D. Kenya"], kunci_jawaban: "B. Norway" },
 
-    // === VID: SCOTLAND - HOME OF MARINE ENERGY (TRAILER - 15 SOAL) ===
+    // === VID: SCOTLAND - HOME OF MARINE ENERGY ===
     { kategori: "Vid: Scotland - Home of Marine Energy", tipe: "pg", pertanyaan: "Apa kriteria energi yang dibutuhkan dunia menurut video trailer?", pilihan: ["A. Murah.", "B. Bersih, andal (reliable), terbarukan.", "C. Bahan bakar alternatif.", "D. Bebas infrastruktur."], kunci_jawaban: "B. Bersih, andal (reliable), terbarukan." },
     { kategori: "Vid: Scotland - Home of Marine Energy", tipe: "pg", pertanyaan: "Mengapa teknologi energi laut esensial?", pilihan: ["A. Laut luas.", "B. Teknologi bersih kunci melawan perubahan iklim.", "C. Paling mudah.", "D. Pengganti nuklir."], kunci_jawaban: "B. Teknologi bersih kunci melawan perubahan iklim." },
     { kategori: "Vid: Scotland - Home of Marine Energy", tipe: "pg", pertanyaan: "Hal apa yang disediakan Skotlandia bagi industri ini?", pilihan: ["A. Pengalaman, infrastruktur, kebijakan, perusahaan.", "B. Dana tetangga.", "C. Lahan kosong.", "D. Baja murah."], kunci_jawaban: "A. Pengalaman, infrastruktur, kebijakan, perusahaan." },
@@ -148,7 +150,7 @@ const databaseSoal = [
     { kategori: "Vid: Scotland - Home of Marine Energy", tipe: "pg", pertanyaan: "Fokus teknologi?", pilihan: ["A. Tercanggih.", "B. Help save the world.", "C. Pabrikasi.", "D. Robotik."], kunci_jawaban: "B. Help save the world." },
     { kategori: "Vid: Scotland - Home of Marine Energy", tipe: "pg", pertanyaan: "Video ini menyebut Skotlandia siap...", pilihan: ["A. Berhenti.", "B. Komersialisasi penuh.", "C. Ganti materi.", "D. Menunggu."], kunci_jawaban: "B. Komersialisasi penuh." },
 
-    // === VID: CH1 - MARINE ENERGY ROLE (9 SOAL) ===
+    // === VID: CH1 - MARINE ENERGY ROLE ===
     { kategori: "Vid: Ch1 - Marine Energy Role", tipe: "pg", pertanyaan: "Mengapa sistem energi masa depan harus berbeda?", pilihan: ["A. Fosil habis.", "B. Fight climate change (perlu EBT).", "C. Kabel murah.", "D. Nuklir turun."], kunci_jawaban: "B. Fight climate change (perlu EBT)." },
     { kategori: "Vid: Ch1 - Marine Energy Role", tipe: "pg", pertanyaan: "Keunggulan tidal power dalam perencanaan?", pilihan: ["A. Sangat murah.", "B. Sangat predictable hingga bertahun-tahun sebelumnya.", "C. Tanpa turbin.", "D. Panas."], kunci_jawaban: "B. Sangat predictable hingga bertahun-tahun sebelumnya." },
     { kategori: "Vid: Ch1 - Marine Energy Role", tipe: "pg", pertanyaan: "Tiga aspek 'Energy Trilemma' yang diseimbangkan pembuat kebijakan adalah...", pilihan: ["A. Biaya, Kecepatan, Lokasi.", "B. Sustainability, Equity, Security.", "C. Politik, Ekonomi, Sosial.", "D. Arus, Gelombang, Pasut."], kunci_jawaban: "B. Sustainability, Equity, Security." },
@@ -159,7 +161,7 @@ const databaseSoal = [
     { kategori: "Vid: Ch1 - Marine Energy Role", tipe: "pg", pertanyaan: "Peran bagi offshore wind?", pilihan: ["A. Penghambat.", "B. Enable growth of offshore floating wind.", "C. Pengganti surya.", "D. Kurangi model."], kunci_jawaban: "B. Enable growth of offshore floating wind." },
     { kategori: "Vid: Ch1 - Marine Energy Role", tipe: "esai", pertanyaan: "Apa bukti titik kritis (Tipping Point) telah tercapai?", kunci_jawaban: "Prototipe terbukti (proven) dan racking up GWh electricity production." },
 
-    // === VID: CH2 - INNOVATION PATHWAY (9 SOAL) ===
+    // === VID: CH2 - INNOVATION PATHWAY ===
     { kategori: "Vid: Ch2 - Innovation Pathway", tipe: "pg", pertanyaan: "Bisnis di Skotlandia disebut sebagai bisnis apa?", pilihan: ["A. Bisnis pionir.", "B. Second generation businesses (membangun dari pionir).", "C. Tanpa riset.", "D. Didirikan pemerintah."], kunci_jawaban: "B. Second generation businesses (membangun dari pionir)." },
     { kategori: "Vid: Ch2 - Innovation Pathway", tipe: "pg", pertanyaan: "Apa itu Circular Innovation Cycle di Skotlandia?", pilihan: ["A. Turbin bulat.", "B. Testing secured feeds back into R&D loop.", "C. Perdagangan karbon.", "D. Penjualan turbin."], kunci_jawaban: "B. Testing secured feeds back into R&D loop." },
     { kategori: "Vid: Ch2 - Innovation Pathway", tipe: "pg", pertanyaan: "Fasilitas tiru gelombang canggih di Univ of Edinburgh?", pilihan: ["A. FastBlade.", "B. EMEC.", "C. FlowWave.", "D. Orbital."], kunci_jawaban: "C. FlowWave" },
@@ -170,7 +172,7 @@ const databaseSoal = [
     { kategori: "Vid: Ch2 - Innovation Pathway", tipe: "esai", pertanyaan: "4 hasil Learn by Doing?", kunci_jawaban: "Innovation, Improvement, Efficiency, Cost reduction." },
     { kategori: "Vid: Ch2 - Innovation Pathway", tipe: "pg", pertanyaan: "Apa kepanjangan EMEC?", pilihan: ["A. Energy Marine.", "B. European Marine Energy Center.", "C. Engineering Center.", "D. Environmental Marine."], kunci_jawaban: "B. European Marine Energy Center." },
 
-    // === VID: CH3 - MARKET OPPORTUNITIES (15 SOAL) ===
+    // === VID: CH3 - MARKET OPPORTUNITIES ===
     { kategori: "Vid: Ch3 - Market Opportunities", tipe: "pg", pertanyaan: "Potensi wave energy listrik global?", pilihan: ["A. 1%", "B. 3%", "C. 5%", "D. 10%"], kunci_jawaban: "B. 3%" },
     { kategori: "Vid: Ch3 - Market Opportunities", tipe: "pg", pertanyaan: "Pasar pertama Mocean Energy?", pilihan: ["A. Perumahan.", "B. Transportasi.", "C. Oil and Gas (dekarbonisasi operasional).", "D. Manufaktur."], kunci_jawaban: "C. Oil and Gas (dekarbonisasi operasional)." },
     { kategori: "Vid: Ch3 - Market Opportunities", tipe: "pg", pertanyaan: "Lokasi tidal array Nova Innovation?", pilihan: ["A. Orkney", "B. Shetland Islands", "C. Inner Sound", "D. Stroma."], kunci_jawaban: "B. Shetland Islands" },
@@ -187,7 +189,7 @@ const databaseSoal = [
     { kategori: "Vid: Ch3 - Market Opportunities", tipe: "pg", pertanyaan: "Manfaat data MeyGen selama 5 tahun?", pilihan: ["A. Suhu turun.", "B. Huge amount of confidence for investors.", "C. Populasi ikan.", "D. Stop riset."], kunci_jawaban: "B. Huge amount of confidence for investors." },
     { kategori: "Vid: Ch3 - Market Opportunities", tipe: "pg", pertanyaan: "Keuntungan di Skotlandia?", pilihan: ["A. Cuaca cerah.", "B. Long history of sea interest & supportive government.", "C. Tanpa regulasi.", "D. Upah rendah."], kunci_jawaban: "B. Long history of sea interest & supportive government." },
 
-    // === VID: CH4 - COMMERCIALISATION (12 SOAL) ===
+    // === VID: CH4 - COMMERCIALISATION ===
     { kategori: "Vid: Ch4 - Commercialisation", tipe: "pg", pertanyaan: "Bisnis di Skotlandia melayani pasar?", pilihan: ["A. Regional.", "B. Worldwide (Seluruh Dunia).", "C. Pesisir.", "D. Berkembang."], kunci_jawaban: "B. Worldwide (Seluruh Dunia)." },
     { kategori: "Vid: Ch4 - Commercialisation", tipe: "pg", pertanyaan: "Energi laut membebaskan operasional?", pilihan: ["A. ROV.", "B. AUV & SUV (dekarbonisasi offshore).", "C. Tanker.", "D. Buoy."], kunci_jawaban: "B. AUV & SUV (dekarbonisasi offshore)." },
     { kategori: "Vid: Ch4 - Commercialisation", tipe: "pg", pertanyaan: "Biaya modal (cost of capital) kedepan?", pilihan: ["A. Naik.", "B. Stabil.", "C. Reduce (berkurang).", "D. Subsidi."], kunci_jawaban: "C. Reduce (berkurang)." },
@@ -202,7 +204,6 @@ const databaseSoal = [
     { kategori: "Vid: Ch4 - Commercialisation", tipe: "pg", pertanyaan: "Langkah besar terakhir Skotlandia?", pilihan: ["A. Lab.", "B. Ready to commercialize.", "C. PHK.", "D. Otomotif."], kunci_jawaban: "B. Ready to commercialize." }
 ];
 
-// --- LOGIC KUIS ---
 let soalAktif = [], indeksSoal = 0, jawabanUser = [], skorPG = 0, totalPG = 0;
 
 function initMenu() {
@@ -220,7 +221,7 @@ function initMenu() {
 function startQuiz(k) {
     soalAktif = k === 'Semua Topik' ? [...databaseSoal] : databaseSoal.filter(s => s.kategori === k);
     indeksSoal = 0; 
-    jawabanUser = new Array(soalAktif.length).fill(null);
+    jawabanUser = new Array(soalAktif.length).fill("");
     document.getElementById('home-screen').style.display = 'none';
     document.getElementById('quiz-screen').style.display = 'block';
     document.getElementById('current-category-text').innerText = k;
@@ -239,27 +240,41 @@ function renderSoal() {
         const txt = document.createElement('textarea');
         txt.className = 'essay-input';
         txt.placeholder = "Ketik jawaban Anda di sini...";
-        txt.value = jawabanUser[indeksSoal] || '';
-        txt.oninput = (e) => { jawabanUser[indeksSoal] = e.target.value; };
+        txt.value = jawabanUser[indeksSoal];
+        // Simpan setiap kali ada perubahan teks
+        txt.addEventListener('input', (e) => {
+            jawabanUser[indeksSoal] = e.target.value;
+        });
         container.appendChild(txt);
     } else {
         const div = document.createElement('div'); div.className = 'options-list';
         s.pilihan.forEach(o => {
-            const lbl = document.createElement('label'); lbl.className = 'option-item';
-            if (jawabanUser[indeksSoal] === o) lbl.classList.add('selected');
+            const lbl = document.createElement('label'); 
+            lbl.className = 'option-item' + (jawabanUser[indeksSoal] === o ? ' selected' : '');
+            
+            const inp = document.createElement('input'); 
+            inp.type = 'radio'; 
+            inp.name = 'quiz-option'; 
+            inp.checked = (jawabanUser[indeksSoal] === o);
+            
             lbl.onclick = () => { 
                 jawabanUser[indeksSoal] = o; 
                 document.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
                 lbl.classList.add('selected');
             };
-            const inp = document.createElement('input'); inp.type = 'radio'; inp.name = 'q'; inp.checked = (jawabanUser[indeksSoal] === o);
-            lbl.append(inp, o); div.appendChild(lbl);
+            
+            lbl.append(inp, o); 
+            div.appendChild(lbl);
         });
         container.appendChild(div);
     }
-    document.getElementById('btn-prev').style.visibility = indeksSoal === 0 ? 'hidden' : 'visible';
+
+    // Konsistensi Layout Tombol
+    document.getElementById('btn-prev').style.display = indeksSoal === 0 ? 'none' : 'block';
     document.getElementById('btn-next').style.display = indeksSoal === soalAktif.length - 1 ? 'none' : 'block';
     document.getElementById('btn-lihat-hasil').style.display = indeksSoal === soalAktif.length - 1 ? 'block' : 'none';
+    
+    window.scrollTo(0, 0); // Scroll ke atas otomatis
 }
 
 function nextQuestion() { if (indeksSoal < soalAktif.length - 1) { indeksSoal++; renderSoal(); } }
@@ -275,20 +290,28 @@ function showResults() {
         const u = jawabanUser[i] || "(Tidak dijawab)";
         const card = document.createElement('div'); card.className = 'review-card';
         let isWrong = s.tipe === 'pg' && u !== s.kunci_jawaban;
+        
         if (isWrong) card.classList.add('wrong-pg');
         if (s.tipe === 'pg' && u === s.kunci_jawaban) skorPG++;
 
         card.innerHTML = `
-            <div class="review-q"><span>${i+1}. ${s.pertanyaan}</span><span class="review-badge">${s.tipe.toUpperCase()}</span></div>
+            <div class="review-q">
+                <span>${i+1}. ${s.pertanyaan}</span>
+                <span class="review-badge">${s.tipe.toUpperCase()}</span>
+            </div>
             <div style="font-size:12px; color:#666">Jawaban Anda:</div>
-            <div class="ans-user">${u} ${isWrong ? '<span style="color:red; font-weight:bold">(Salah)</span>' : ''}</div>
-            ${isWrong || s.tipe === 'esai' ? `<div style="font-size:12px; color:#666; margin-top:10px">Jawaban Benar / Referensi:</div><div class="ans-ref">${s.kunci_jawaban}</div>` : ''}
+            <div class="ans-user">${u} ${isWrong ? '<span style="color:red; font-weight:bold"> (Salah)</span>' : ''}</div>
+            <div style="font-size:12px; color:#666; margin-top:10px">Jawaban Benar / Referensi:</div>
+            <div class="ans-ref">${s.kunci_jawaban}</div>
         `;
         container.appendChild(card);
     });
+    
     document.getElementById('score-category-name').innerText = document.getElementById('current-category-text').innerText;
     document.getElementById('score-text-total').innerText = `${skorPG} / ${totalPG}`;
+    window.scrollTo(0, 0);
 }
+
 initMenu();
 </script>
 </body>
