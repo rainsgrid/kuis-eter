@@ -3,251 +3,660 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis Simulasi Energi Laut</title>
+    <title>Simulasi UTS ETER</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .quiz-container { background-color: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 40px; width: 100%; max-width: 700px; }
-        h2 { color: #0d6efd; margin-bottom: 20px; text-align: center; }
-        .question { font-size: 18px; margin-bottom: 20px; font-weight: 600; color: #333; }
-        .options-container { display: flex; flex-direction: column; gap: 12px; }
-        .option-btn { background-color: #fff; border: 2px solid #dee2e6; color: #495057; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 16px; text-align: left; transition: all 0.2s; }
-        .option-btn:hover { border-color: #0d6efd; background-color: #f8f9fa; }
-        .option-btn.correct { background-color: #198754; color: white; border-color: #198754; }
-        .option-btn.wrong { background-color: #dc3545; color: white; border-color: #dc3545; }
-        #next-btn { margin-top: 25px; background-color: #0d6efd; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 16px; display: none; width: 100%; font-weight: bold; }
-        #next-btn:hover { background-color: #0b5ed7; }
-        .score-text { font-size: 24px; font-weight: bold; color: #333; text-align: center; margin-bottom: 20px; }
+        /* === STYLING DASAR & LAYOUT === */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+        
+        /* === HALAMAN MENU (HOME) === */
+        .header-title { text-align: center; color: #0d6efd; font-size: 28px; font-weight: bold; margin-bottom: 10px; }
+        .header-subtitle { text-align: center; color: #6c757d; font-size: 14px; margin-bottom: 30px; }
+        .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .btn-outline {
+            background-color: transparent; border: 1px solid #0d6efd; color: #0d6efd;
+            padding: 15px; border-radius: 6px; cursor: pointer; font-size: 15px; text-align: left; font-weight: 500; transition: 0.2s;
+        }
+        .btn-outline:hover { background-color: #e9ecef; }
+        .btn-solid {
+            background-color: #0d6efd; color: white; border: none;
+            padding: 15px; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: bold; width: 100%; text-align: center; transition: 0.2s;
+        }
+        .btn-solid:hover { background-color: #0b5ed7; }
+        .btn-green { background-color: #198754; width: auto; padding: 12px 24px; }
+        
+        /* === HALAMAN KUIS === */
+        .quiz-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
+        .category-title { color: #0d6efd; font-size: 22px; font-weight: bold; margin: 0; }
+        .question-counter { color: #6c757d; font-size: 14px; font-weight: 500; }
+        .progress-bar-container { width: 100%; background-color: #e9ecef; height: 6px; border-radius: 3px; margin-bottom: 25px; overflow: hidden; }
+        .progress-bar { height: 100%; background-color: #0d6efd; width: 0%; transition: width 0.3s ease; }
+        
+        .question-box { background-color: #f0f7ff; border: 1px solid #cce3fd; border-radius: 8px; padding: 20px; font-size: 16px; margin-bottom: 20px; text-align: center; font-weight: 500;}
+        
+        /* Input Esai */
+        textarea.essay-input {
+            width: 100%; height: 150px; padding: 15px; border: 1px solid #ced4da; border-radius: 6px;
+            font-family: inherit; font-size: 15px; box-sizing: border-box; resize: vertical; margin-bottom: 20px;
+        }
+        textarea.essay-input:focus { outline: none; border-color: #0d6efd; }
+        
+        /* Input PG */
+        .options-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .option-item {
+            display: flex; align-items: center; padding: 12px 15px; border: 1px solid #ced4da; border-radius: 6px; cursor: pointer; transition: 0.2s;
+        }
+        .option-item:hover { background-color: #f8f9fa; }
+        .option-item input { margin-right: 15px; transform: scale(1.2); cursor: pointer;}
+        .option-item.selected { border-color: #0d6efd; background-color: #f0f7ff; }
+        
+        .quiz-footer { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+
+        /* === HALAMAN HASIL === */
+        .result-title { text-align: center; color: #0d6efd; font-size: 24px; font-weight: bold; margin-bottom: 25px; }
+        .score-card { border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; margin-bottom: 30px; }
+        .score-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; font-weight: 500; color: #333;}
+        .score-row.total { border-top: 1px solid #e9ecef; padding-top: 10px; margin-top: 10px; color: #198754; font-weight: bold; font-size: 18px;}
+        
+        .review-section h3 { text-align: center; font-size: 16px; color: #333; margin-bottom: 20px;}
+        .review-card { border: 1px solid #cce3fd; border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: #f8fbfd;}
+        .review-card.wrong-pg { border-color: #f8d7da; background-color: #fff5f5; }
+        .review-q { font-weight: bold; font-size: 14px; margin-bottom: 10px; display: flex; justify-content: space-between;}
+        .review-badge { background-color: #e9ecef; color: #495057; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: normal;}
+        .review-a-title { font-size: 12px; color: #6c757d; font-weight: bold; margin-bottom: 5px; margin-top: 15px;}
+        .review-a-user { background-color: #fff; padding: 10px; border: 1px solid #e9ecef; border-radius: 4px; font-size: 14px; font-style: italic; color: #495057;}
+        .review-a-ref { background-color: #e8f4fd; padding: 10px; border: 1px solid #cce3fd; border-radius: 4px; font-size: 14px; color: #084298;}
     </style>
 </head>
 <body>
 
-<div class="quiz-container">
-    <h2>🌊 Simulasi Kuis Energi Laut</h2>
-    <div id="quiz-content">
-        <div class="question" id="question-text">Memuat pertanyaan...</div>
-        <div class="options-container" id="options-container"></div>
-        <button id="next-btn" onclick="nextQuestion()">Selanjutnya</button>
+<div class="container" id="home-screen">
+    <div class="header-title">SIMULASI UAS PASUT</div>
+    <div class="header-subtitle">Simulasi UAS pasut viral terbaru 2025 no sensor by Akademik Keilmuan Komisariat HMO TRITON ITB</div>
+    
+    <div class="grid-menu" id="menu-container">
+        </div>
+    <button class="btn-solid" onclick="startQuiz('Semua Topik')">Semua Topik</button>
+</div>
+
+<div class="container" id="quiz-screen" style="display: none;">
+    <div class="quiz-header">
+        <h2 class="category-title" id="current-category-text">Mg 9: Model Darwin</h2>
+        <div class="question-counter" id="question-counter">Soal 1 / 22</div>
     </div>
-    <div id="result-content" style="display: none; text-align: center;">
-        <h2>Kuis Selesai! 🎉</h2>
-        <p class="score-text" id="score-text"></p>
-        <button class="option-btn" onclick="location.reload()" style="background-color:#0d6efd; color:white; text-align:center; font-weight:bold; border:none;">Ulangi Kuis</button>
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    
+    <div class="question-box" id="question-text">
+        Jelaskan mengapa metode pengembangan Darwin disebut sebagai 'metode kuasi harmonik'. Apa keterbatasannya?
+    </div>
+    
+    <div id="answer-container"></div>
+    
+    <div class="quiz-footer">
+        <button class="btn-solid btn-green" id="btn-lihat-hasil" style="display:none;" onclick="showResults()">Lihat Hasil</button>
+        <button class="btn-solid" id="btn-next" style="width: auto; padding: 12px 24px;" onclick="nextQuestion()">Selanjutnya</button>
     </div>
 </div>
 
+<div class="container" id="result-screen" style="display: none;">
+    <div class="result-title">Hasil Kuis</div>
+    
+    <div class="score-card">
+        <div style="font-weight: bold; margin-bottom: 15px; font-size: 18px;">Rincian Skor Pilihan Ganda</div>
+        <div class="score-row">
+            <span id="score-category-name">Mg 9: Model Darwin</span>
+            <span id="score-text-pg" style="color: #0d6efd;">0/0 (0%)</span>
+        </div>
+        <div class="score-row total">
+            <span>Total Skor</span>
+            <span id="score-text-total">0/0 (0%)</span>
+        </div>
+    </div>
+    
+    <div class="review-section">
+        <h3>Tinjau Jawaban:</h3>
+        <div id="review-container">
+            </div>
+    </div>
+    
+    <button class="btn-solid" onclick="location.reload()" style="margin-top: 20px;">Kembali ke Menu Utama</button>
+</div>
+
 <script>
-    const quizData = [
-        {
-            "pertanyaan": "Meskipun energi surya dan angin berkembang pesat dalam transisi energi global, mengapa diversifikasi ke arah energi laut tetap menjadi urgensi yang sangat penting?",
-            "pilihan": [
-                "A. Energi surya dan angin memiliki biaya perawatan yang lebih tinggi daripada turbin laut.",
-                "B. Sifat intermitensi dari energi surya dan angin membutuhkan sumber energi lain yang stabil, seperti energi laut berbasis arus.",
-                "C. Pembangkitan listrik rendah karbon dari sektor surya sudah mencapai batas maksimal 40%.",
-                "D. Permintaan listrik dari sektor digital hanya kompatibel dengan output listrik laut."
-            ],
-            "jawaban_benar": "B. Sifat intermitensi dari energi surya dan angin membutuhkan sumber energi lain yang stabil, seperti energi laut berbasis arus."
-        },
-        {
-            "pertanyaan": "Dalam konteks wilayah 3T, pengembangan energi laut tidak hanya berdampak pada aspek lingkungan, tetapi juga ekonomi. Alasan utamanya adalah...",
-            "pilihan": [
-                "A. Membuka lapangan kerja penambangan lepas pantai secara masif.",
-                "B. Mampu menekan biaya listrik tinggi dengan menggantikan PLTD (diesel) yang bahan bakarnya mahal.",
-                "C. Energi laut akan langsung diekspor ke negara tetangga.",
-                "D. Memicu urbanisasi warga kota ke wilayah 3T."
-            ],
-            "jawaban_benar": "B. Mampu menekan biaya listrik tinggi dengan menggantikan PLTD (diesel) yang bahan bakarnya mahal."
-        },
-        {
-            "pertanyaan": "Terkait transisi energi global, mengapa pertumbuhan sektor digital dan kendaraan listrik justru menimbulkan 'ancaman' stabilitas jika hanya mengandalkan surya dan angin?",
-            "pilihan": [
-                "A. Infrastruktur digital tidak kompatibel dengan arus DC.",
-                "B. Lonjakan permintaan membutuhkan suplai 'baseload' yang stabil, sementara surya dan angin bergantung cuaca.",
-                "C. Biaya produksi energi surya lebih mahal dari biaya server.",
-                "D. Energi angin khusus dialokasikan untuk industri berat."
-            ],
-            "jawaban_benar": "B. Lonjakan permintaan membutuhkan suplai 'baseload' yang stabil, sementara surya dan angin bergantung cuaca."
-        },
-        {
-            "pertanyaan": "Implementasi strategis energi laut yang bersinergi dengan sektor perikanan untuk mendukung ekonomi nelayan adalah...",
-            "pilihan": [
-                "A. Mengganti semua kapal dengan mesin turbin.",
-                "B. Pemanfaatan energi laut skala kecil untuk mengamankan listrik mesin pendingin ikan (cold storage).",
-                "C. Pembangunan bendungan raksasa di area tangkapan.",
-                "D. Melatih nelayan menjadi teknisi bawah air."
-            ],
-            "jawaban_benar": "B. Pemanfaatan energi laut skala kecil untuk mengamankan listrik mesin pendingin ikan (cold storage)."
-        },
-        {
-            "pertanyaan": "Mengapa pendekatan desentralisasi energi berbasis laut di wilayah Timur Indonesia lebih logis daripada membangun jaringan kabel laut raksasa antar-pulau?",
-            "pilihan": [
-                "A. Karena laut di Timur terlalu dalam untuk kabel.",
-                "B. Karakteristik selat sempit membuat arus kuat dan stabil, sehingga setiap pulau bisa mandiri energi.",
-                "C. Syarat mutlak dari investor asing.",
-                "D. Untuk mencegah monopoli listrik dari Jawa."
-            ],
-            "jawaban_benar": "B. Karakteristik selat sempit membuat arus kuat dan stabil, sehingga setiap pulau bisa mandiri energi."
-        },
-        {
-            "pertanyaan": "Fenomena fisis utama yang memperkuat aliran Arus Lintas Indonesia (ITF) di kawasan Nusa Tenggara adalah...",
-            "pilihan": [
-                "A. Perbedaan salinitas ekstrem akibat limbah.",
-                "B. Topografi selat sempit yang berfungsi seperti 'corong' hidrodinamika, mempercepat aliran massa air.",
-                "C. Curah hujan tahunan yang tinggi.",
-                "D. Aktivitas vulkanik bawah laut."
-            ],
-            "jawaban_benar": "B. Topografi selat sempit yang berfungsi seperti 'corong' hidrodinamika, mempercepat aliran massa air."
-        },
-        {
-            "pertanyaan": "Jika rekayasa material diabaikan dalam pengembangan turbin laut, risiko operasional tercepat yang akan terjadi adalah...",
-            "pilihan": [
-                "A. Turbin tenggelam karena berat jenis bertambah.",
-                "B. Terjadinya bio-fouling dan korosi parah yang merusak bilah turbin serta menaikkan biaya pemeliharaan.",
-                "C. Material meracuni ikan karang.",
-                "D. Air laut di sekitarnya menjadi panas."
-            ],
-            "jawaban_benar": "B. Terjadinya bio-fouling dan korosi parah yang merusak bilah turbin serta menaikkan biaya pemeliharaan."
-        },
-        {
-            "pertanyaan": "Aplikasi energi biru skala khusus untuk restorasi lingkungan ditunjukkan melalui...",
-            "pilihan": [
-                "A. Pemanasan air untuk membunuh spesies invasif.",
-                "B. Pemanfaatan arus listrik lemah dari energi gelombang untuk memacu akresi kalsium karbonat dalam transplantasi karang.",
-                "C. Menyedot sampah plastik secara otomatis.",
-                "D. Membangkitkan suara untuk mengusir predator karang."
-            ],
-            "jawaban_benar": "B. Pemanfaatan arus listrik lemah dari energi gelombang untuk memacu akresi kalsium karbonat dalam transplantasi karang."
-        },
-        {
-            "pertanyaan": "Pola transisi energi di Nusa Tenggara menuju Net Zero Emission 2050 tergolong unik karena...",
-            "pilihan": [
-                "A. Tidak bertujuan menurunkan emisi industri raksasa, melainkan melompati (leapfrogging) ketergantungan fosil untuk membangun akses listrik.",
-                "B. Diwajibkan menggunakan nuklir sepenuhnya.",
-                "C. Mengimpor listrik bersih dari Australia.",
-                "D. Menutup semua pabrik lokal."
-            ],
-            "jawaban_benar": "A. Tidak bertujuan menurunkan emisi industri raksasa, melainkan melompati (leapfrogging) ketergantungan fosil untuk membangun akses listrik."
-        },
-        {
-            "pertanyaan": "Penerapan konsep hilirisasi industri hijau dalam konteks teknologi energi laut di Indonesia berarti...",
-            "pilihan": [
-                "A. Menjual hak kelola laut ke asing.",
-                "B. Meningkatkan nilai tambah dengan memproduksi turbin dan komponen infrastruktur laut di dalam negeri.",
-                "C. Mengekspor baterai dari air laut.",
-                "D. Hanya berfokus pada ekspor listrik mentah."
-            ],
-            "jawaban_benar": "B. Meningkatkan nilai tambah dengan memproduksi turbin dan komponen infrastruktur laut di dalam negeri."
-        },
-        {
-            "pertanyaan": "Sebelum instalasi turbin arus laut secara masif, apa risiko jika pemodelan hidrodinamika dilewati?",
-            "pilihan": [
-                "A. Penempatan turbin menjadi tidak efisien karena mengabaikan analisis karakteristik arus dan kedalaman.",
-                "B. Harga material anti-korosi melonjak drastis.",
-                "C. Izin AMDAL otomatis ditolak.",
-                "D. Turbin akan dicuri."
-            ],
-            "jawaban_benar": "A. Penempatan turbin menjadi tidak efisien karena mengabaikan analisis karakteristik arus dan kedalaman."
-        },
-        {
-            "pertanyaan": "Apa tonggak krusial yang harus dipenuhi pemerintah sebagai fondasi awal menuju Net Zero Emission?",
-            "pilihan": [
-                "A. Melarang semua kendaraan berbahan bakar minyak.",
-                "B. Mencapai target bauran Energi Baru Terbarukan (EBT) sebesar 23%.",
-                "C. Menghentikan operasi semua PLTU batubara besok pagi.",
-                "D. Mensubsidi penuh listrik untuk kawasan industri."
-            ],
-            "jawaban_benar": "B. Mencapai target bauran Energi Baru Terbarukan (EBT) sebesar 23%."
-        },
-        {
-            "pertanyaan": "Alasan komparatif terkuat yang menjadikan Indonesia berpeluang memimpin teknologi energi laut di Asia Tenggara adalah...",
-            "pilihan": [
-                "A. Anggaran riset kelautan Indonesia terbesar di dunia.",
-                "B. Karakteristik kepulauan dengan ribuan selat yang dilintasi arus samudra permanen memberikan kestabilan energi yang tinggi.",
-                "C. Terbebas sepenuhnya dari ancaman tsunami.",
-                "D. Tidak memiliki laut dalam."
-            ],
-            "jawaban_benar": "B. Karakteristik kepulauan dengan ribuan selat yang dilintasi arus samudra permanen memberikan kestabilan energi yang tinggi."
-        },
-        {
-            "pertanyaan": "Berdasarkan data, konsumsi listrik di Nusa Tenggara masih rendah. Kesimpulan analitis dari data tersebut adalah...",
-            "pilihan": [
-                "A. Masyarakat menolak teknologi terbarukan.",
-                "B. Angka tersebut mencerminkan terbatasnya infrastruktur saat ini, bukan kebutuhan energi yang minim.",
-                "C. Investasi energi laut di sana pasti rugi.",
-                "D. Nusa Tenggara harus fokus ke energi angin saja."
-            ],
-            "jawaban_benar": "B. Angka tersebut mencerminkan terbatasnya infrastruktur saat ini, bukan kebutuhan energi yang minim."
-        },
-        {
-            "pertanyaan": "Penguatan instrumen survei kelautan sangat mutlak diperlukan sebelum implementasi masif energi arus laut karena...",
-            "pilihan": [
-                "A. Tanpa pemetaan presisi dasar laut dan variabilitas musiman, investasi instalasi turbin berisiko gagal teknis.",
-                "B. Untuk memenuhi syarat birokrasi pemerintah daerah.",
-                "C. Alat survei bisa disewakan kembali.",
-                "D. Membantu mencari kapal karam yang memiliki nilai sejarah."
-            ],
-            "jawaban_benar": "A. Tanpa pemetaan presisi dasar laut dan variabilitas musiman, investasi instalasi turbin berisiko gagal teknis."
-        }
-    ];
+    // === DATABASE SOAL (STRUKTUR BARU) ===
+    // Sekarang setiap soal punya "kategori" dan "tipe" (esai atau pg)
+const databaseSoal = [
+    // === GLOBAL ENERGY OUTLOOK ===
+    {
+        kategori: "Global Energy Outlook",
+        tipe: "pg",
+        pertanyaan: "Berdasarkan Global Energy Outlook 2026, apa dampak utama dari pertumbuhan pesat sektor digital dan kendaraan listrik terhadap sistem energi global?",
+        pilihan: [
+            "A. Menurunkan biaya produksi listrik dari energi surya.",
+            "B. Meningkatkan permintaan listrik secara drastis sehingga menimbulkan tantangan dalam menjaga stabilitas suplai energi.",
+            "C. Mempercepat transisi sepenuhnya ke penggunaan batubara bersih.",
+            "D. Mengurangi kebutuhan akan energi laut secara global."
+        ],
+        kunci_jawaban: "B. Meningkatkan permintaan listrik secara drastis sehingga menimbulkan tantangan dalam menjaga stabilitas suplai energi."
+    },
+    {
+        kategori: "Global Energy Outlook",
+        tipe: "pg",
+        pertanyaan: "Mengapa pengembangan energi laut berbasis arus menjadi sangat penting meskipun pembangkit listrik energi surya dan angin sudah berkembang pesat?",
+        pilihan: [
+            "A. Karena sifat intermitensi (ketidakstabilan) dari energi surya dan angin memerlukan diversifikasi ke sumber energi yang lebih stabil.",
+            "B. Karena energi surya dan angin tidak bisa digunakan di daerah tropis.",
+            "C. Karena biaya pembuatan panel surya jauh lebih mahal daripada turbin laut.",
+            "D. Karena energi laut adalah satu-satunya sumber yang disetujui dalam Net Zero Emission."
+        ],
+        kunci_jawaban: "A. Karena sifat intermitensi (ketidakstabilan) dari energi surya dan angin memerlukan diversifikasi ke sumber energi yang lebih stabil."
+    },
 
-    let currentQuestionIndex = 0;
-    let score = 0;
+    {
+        kategori: "Global Energy Outlook",
+        tipe: "pg",
+        pertanyaan: "Apa target awal yang menjadi tonggak utama (milestone) bagi Indonesia dalam upaya mencapai Net Zero Emission?",
+        pilihan: [
+            "A. Mencapai bauran Energi Baru Terbarukan (EBT) sebesar 40%.",
+            "B. Menghapus 100% Pembangkit Listrik Tenaga Diesel di seluruh Indonesia.",
+            "C. Mencapai target bauran Energi Baru Terbarukan (EBT) sebesar 23%.",
+            "D. Menyelesaikan hilirisasi industri hijau di pulau Jawa."
+        ],
+        kunci_jawaban: "C. Mencapai target bauran Energi Baru Terbarukan (EBT) sebesar 23%."
+    },
+    {
+        kategori: "Global Energy Outlook",
+        tipe: "esai",
+        pertanyaan: "Jelaskan bagaimana kebijakan desentralisasi pembangkit listrik dapat menjadi solusi yang tepat untuk masalah akses energi di wilayah timur Indonesia!",
+        kunci_jawaban: "Kebijakan desentralisasi sangat mendukung pembangunan pembangkit listrik yang berbasis pada potensi lokal, terutama di wilayah timur Indonesia[cite: 234, 235]. Hal ini dinilai lebih efektif untuk mengatasi masalah akses energi dibandingkan membangun jaringan listrik raksasa tersentralisasi[cite: 234, 235]."
+    },
+    {
+        kategori: "Global Energy Outlook",
+        tipe: "esai",
+        pertanyaan: "Mengapa pemerintah sangat menekankan pentingnya hilirisasi industri hijau dalam Roadmap Energi menuju 2060?",
+        kunci_jawaban: "Hilirisasi industri hijau difokuskan untuk meningkatkan nilai tambah ekonomi secara langsung dari sumber daya domestik[cite: 232, 233]. Selain itu, langkah ini sangat penting untuk memperkuat ketahanan energi nasional di masa depan[cite: 232, 233]."
+    },
 
-    const questionEl = document.getElementById('question-text');
-    const optionsEl = document.getElementById('options-container');
-    const nextBtn = document.getElementById('next-btn');
-    const quizContent = document.getElementById('quiz-content');
-    const resultContent = document.getElementById('result-content');
-    const scoreText = document.getElementById('score-text');
+    {
+        kategori: "Global Energy Outlook",
+        tipe: "pg",
+        pertanyaan: "Karakteristik geografis unik apa yang menjadikan Indonesia memiliki potensi energi laut yang sangat dapat diprediksi?",
+        pilihan: [
+            "A. Tingkat curah hujan yang stabil di sepanjang garis khatulistiwa.",
+            "B. Keberadaan banyak selat sempit yang memiliki arus laut kuat dan stabil.",
+            "C. Suhu permukaan laut yang selalu berada di atas 30 derajat Celcius.",
+            "D. Tidak adanya palung laut dalam di wilayah perairan yurisdiksi Indonesia."
+        ],
+        kunci_jawaban: "B. Keberadaan banyak selat sempit yang memiliki arus laut kuat dan stabil."
+    },
+    {
+        kategori: "Global Energy Outlook",
+        tipe: "esai",
+        pertanyaan: "Mengapa wilayah 3T (Tertinggal, Terdepan, Terluar) di Indonesia merupakan target yang sangat ideal untuk implementasi energi laut?",
+        kunci_jawaban: "Implementasi energi laut sangat krusial bagi wilayah 3T karena dapat membantu mengurangi biaya listrik yang saat ini tergolong tinggi[cite: 243, 244]. Energi laut bertindak sebagai pengganti Pembangkit Listrik Tenaga Diesel (PLTD) yang selama ini bahan bakarnya mahal dan proses logistiknya sangat sulit[cite: 243, 244]."
+    },
 
-    function loadQuestion() {
-        const currentQuiz = quizData[currentQuestionIndex];
-        questionEl.innerText = `${currentQuestionIndex + 1}. ${currentQuiz.pertanyaan}`;
-        optionsEl.innerHTML = '';
-        nextBtn.style.display = 'none';
+    {
+        kategori: "Global Energy Outlook",
+        tipe: "pg",
+        pertanyaan: "Di kawasan Nusa Tenggara dan Timur Indonesia, fenomena oseanografi apa yang membawa energi kinetik sangat besar untuk diubah menjadi pasokan listrik berkelanjutan?",
+        pilihan: [
+            "A. Arus Lintas Indonesia (ITF).",
+            "B. El Nino Southern Oscillation (ENSO).",
+            "C. Gelombang alun (swell) Samudra Hindia.",
+            "D. Upwelling musiman di Laut Banda."
+        ],
+        kunci_jawaban: "A. Arus Lintas Indonesia (ITF)."
+    },
+    {
+        kategori: "Global Energy Outlook",
+        tipe: "pg",
+        pertanyaan: "Berdasarkan data energi, konsumsi listrik di Nusa Tenggara tercatat masih rendah. Apa kesimpulan yang paling tepat dari kondisi tersebut?",
+        pilihan: [
+            "A. Masyarakat lokal menolak masuknya aliran listrik.",
+            "B. Kebutuhan energi masyarakatnya memang sangat minim karena faktor budaya.",
+            "C. Konsumsi rendah disebabkan oleh keterbatasan infrastruktur saat ini, bukan karena rendahnya kebutuhan.",
+            "D. Rasio elektrifikasi di wilayah tersebut sudah mencapai 100%."
+        ],
+        kunci_jawaban: "C. Konsumsi rendah disebabkan oleh keterbatasan infrastruktur saat ini, bukan karena rendahnya kebutuhan."
+    },
+    {
+        kategori: "Global Energy Outlook",
+        tipe: "esai",
+        pertanyaan: "Bagaimana ketersediaan energi laut yang stabil dapat memberikan dampak ekonomi langsung terhadap masyarakat pesisir di Nusa Tenggara?",
+        kunci_jawaban: "Akses energi dari laut yang stabil akan sangat berdampak positif pada kegiatan ekonomi lokal, khususnya yang bergantung pada listrik[cite: 257, 258]. Sektor utama yang akan didukung antara lain perikanan, pengolahan hasil tangkapan laut, serta pariwisata daerah[cite: 257, 258]."
+    },
 
-        currentQuiz.pilihan.forEach(pilihan => {
-            const button = document.createElement('button');
-            button.innerText = pilihan;
-            button.classList.add('option-btn');
-            button.onclick = () => selectAnswer(button, currentQuiz.jawaban_benar);
-            optionsEl.appendChild(button);
+    {
+        kategori: "Global Energy Outlook",
+        tipe: "pg",
+        pertanyaan: "Dalam fase instalasi dan pemeliharaan, tantangan teknologi terbesar apa yang harus diselesaikan pada turbin energi laut?",
+        pilihan: [
+            "A. Modifikasi baling-baling agar dapat berputar tanpa arus air.",
+            "B. Mengembangkan baterai raksasa untuk menyimpan listrik di bawah laut.",
+            "C. Mengembangkan material tahan korosi dan lapisan pelindung untuk mengatasi bio-fouling serta perusakan akibat air laut.",
+            "D. Mengubah bentuk turbin agar mirip dengan terumbu karang alami."
+        ],
+        kunci_jawaban: "C. Mengembangkan material tahan korosi dan lapisan pelindung untuk mengatasi bio-fouling serta perusakan akibat air laut."
+    },
+    {
+        kategori: "Global Energy Outlook",
+        tipe: "esai",
+        pertanyaan: "Jelaskan urgensi penggunaan 'Pemodelan Hidrodinamika' sebelum melakukan proses instalasi turbin energi laut secara nyata di lapangan!",
+        kunci_jawaban: "Pemodelan hidrodinamika sangat penting digunakan untuk membantu menentukan lokasi penempatan turbin yang paling baik[cite: 267, 268]. Penentuan ini mengkalkulasi berbagai parameter kritis seperti kecepatan arus, kondisi kedalaman perairan, serta memperkirakan dampak terhadap lingkungan sekitarnya[cite: 267, 268]."
+    },
+    {
+        kategori: "Global Energy Outlook",
+        tipe: "esai",
+        pertanyaan: "Secara strategis, apa keuntungan yang bisa didapatkan Indonesia berkat karakter geografis dan potensi arus lautnya di tingkat regional?",
+        kunci_jawaban: "Berkat kombinasi karakter geografis kepulauan dan besarnya potensi arus laut yang dimiliki, Indonesia mendapat keuntungan strategis yang sangat besar[cite: 276, 277]. Indonesia berpeluang besar untuk menjadi calon pemimpin regional dalam teknologi energi laut di kawasan Asia Tenggara[cite: 276, 277]."
+    },
+	// === TOPIK: SMALL ISLAND ENERGY RESILIENCE ===
+    {
+        kategori: "Ocean Energy Conversion for Small Island Resilience",
+        tipe: "pg",
+        pertanyaan: "Mengapa pemanfaatan energi laut menjadi sangat krusial untuk menciptakan kemandirian energi di pulau-pulau kecil?",
+        pilihan: [
+            "A. Karena teknologi energi laut adalah yang paling murah di antara semua energi terbarukan.",
+            "B. Karena energi laut menyediakan sumber energi stabil dan terbarukan yang secara langsung mengurangi ketergantungan pulau kecil terhadap impor bahan bakar fosil.",
+            "C. Karena pulau kecil tidak memiliki sinar matahari yang cukup untuk panel surya.",
+            "D. Karena seluruh pulau kecil memiliki gunung berapi untuk pembangkit panas bumi."
+        ],
+        kunci_jawaban: "B. Karena energi laut menyediakan sumber energi stabil dan terbarukan yang secara langsung mengurangi ketergantungan pulau kecil terhadap impor bahan bakar fosil.[cite: 211, 260]"
+    },
+    {
+        kategori: "Ocean Energy Conversion for Small Island Resilience",
+        tipe: "pg",
+        pertanyaan: "Di antara berbagai teknologi energi laut, teknologi mana yang paling ideal untuk menghasilkan pasokan listrik dasar (base load) yang stabil selama 24 jam sehari di wilayah tropis?",
+        pilihan: [
+            "A. Energi Gelombang Laut (Wave Energy)",
+            "B. Energi Pasang Surut (Tidal Energy)",
+            "C. Konversi Energi Termal Laut (OTEC)",
+            "D. Energi Salinitas (Blue Energy)"
+        ],
+        kunci_jawaban: "C. Konversi Energi Termal Laut (OTEC)[cite: 213, 225, 235]"
+    },
+    {
+        kategori: "Ocean Energy Conversion for Small Island Resilience",
+        tipe: "pg",
+        pertanyaan: "Dalam teknologi energi gelombang laut, perangkat atau sistem mekanik apa yang umum digunakan untuk menangkap energi dari pergerakan gelombang?",
+        pilihan: [
+            "A. Turbin bawah laut sumbu horizontal",
+            "B. Bendungan pasang surut (tidal barrage)",
+            "C. Oscillating water columns dan point absorbers",
+            "D. Pipa penyedot air laut dalam"
+        ],
+        kunci_jawaban: "C. Oscillating water columns dan point absorbers[cite: 227]"
+    },
+    {
+        kategori: "Ocean Energy Conversion for Small Island Resilience",
+        tipe: "pg",
+        pertanyaan: "Energi Salinitas (Blue Energy) dinilai memiliki keterbatasan jika diaplikasikan untuk ketahanan pulau-pulau kecil. Apa penyebab utamanya?",
+        pilihan: [
+            "A. Membutuhkan perbedaan suhu yang sangat ekstrem.",
+            "B. Sangat dibatasi untuk pulau-pulau yang tidak memiliki aliran sungai besar, karena teknologinya membutuhkan perbedaan kadar garam.",
+            "C. Menghasilkan limbah karbon yang beracun bagi terumbu karang.",
+            "D. Hanya bisa beroperasi di kawasan laut dalam."
+        ],
+        kunci_jawaban: "B. Sangat dibatasi untuk pulau-pulau yang tidak memiliki aliran sungai besar, karena teknologinya membutuhkan perbedaan kadar garam.[cite: 233, 235]"
+    },
+    {
+        kategori: "Ocean Energy Conversion for Small Island Resilience",
+        tipe: "esai",
+        pertanyaan: "Selain memproduksi energi listrik secara berkelanjutan, sebutkan manfaat multifungsi lainnya dari teknologi OTEC yang dapat sangat membantu ketahanan pulau kecil!",
+        kunci_jawaban: "Selain menghasilkan listrik, fasilitas OTEC dapat mendukung produksi air tawar (desalinasi), menyediakan sistem pendinginan distrik (district cooling), serta mendukung budi daya organisme laut yang kaya akan nutrisi[cite: 217, 244, 264]."
+    },
+    {
+        kategori: "Ocean Energy Conversion for Small Island Resilience",
+        tipe: "pg",
+        pertanyaan: "Untuk mengatasi masalah cuaca ekstrem, inovasi terbaru platform OTEC tahan badai (seperti yang dirancang untuk lepas pantai Gran Canaria 2025) dilengkapi dengan instrumen canggih berupa...",
+        pilihan: [
+            "A. Baling-baling raksasa pemecah angin.",
+            "B. Sensor gyroscopic dan accelerometer untuk memantau kestabilan struktur dan pipa air laut secara real-time.",
+            "C. Jangkar berbahan dasar titanium murni.",
+            "D. Sistem hidrolik yang dapat menenggelamkan seluruh platform ke dasar laut saat badai."
+        ],
+        kunci_jawaban: "B. Sensor gyroscopic dan accelerometer untuk memantau kestabilan struktur dan pipa air laut secara real-time.[cite: 249, 251]"
+    },
+    {
+        kategori: "Ocean Energy Conversion for Small Island Resilience",
+        tipe: "esai",
+        pertanyaan: "Berdasarkan tabel kecocokan teknologi energi laut, jelaskan perbedaan kondisi lokasi yang ideal untuk pemasangan teknologi Energi Pasang Surut (Tidal) dibandingkan dengan Energi Gelombang (Wave) di pulau kecil!",
+        kunci_jawaban: "Energi Pasang Surut (Tidal) sangat cocok diterapkan di area dengan kondisi topografi berupa selat sempit yang memiliki aliran arus kuat[cite: 234, 235]. Sementara itu, Energi Gelombang (Wave) lebih cocok diimplementasikan di wilayah perairan yang memiliki karakteristik ombak sedang hingga tinggi[cite: 234, 235]."
+    },
+    {
+        kategori: "Ocean Energy Conversion for Small Island Resilience",
+        tipe: "pg",
+        pertanyaan: "Dari segi keamanan sosial dan kebencanaan, mengapa stabilitas pasokan listrik dari energi mandiri berbasis laut sangat vital bagi pulau kecil?",
+        pilihan: [
+            "A. Agar wisatawan asing tidak mengeluh saat berkunjung.",
+            "B. Untuk menjamin operasional fasilitas yang sangat penting seperti rumah sakit dan pusat komunikasi agar tetap berjalan tanpa gangguan.",
+            "C. Agar seluruh penduduk pulau dapat menggunakan kendaraan listrik.",
+            "D. Untuk mendukung kegiatan penambangan mineral lepas pantai."
+        ],
+        kunci_jawaban: "B. Untuk menjamin operasional fasilitas yang sangat penting seperti rumah sakit dan pusat komunikasi agar tetap berjalan tanpa gangguan.[cite: 262]"
+    },
+    {
+        kategori: "Ocean Energy Conversion for Small Island Resilience",
+        tipe: "esai",
+        pertanyaan: "Meskipun memiliki potensi besar untuk pulau kecil, jelaskan tiga hambatan utama (implementasi) yang masih dihadapi dalam pengembangan teknologi energi laut saat ini!",
+        kunci_jawaban: "Tiga hambatan utamanya adalah: 1) Tantangan investasi awal yang sangat tinggi sehingga investor berhati-hati[cite: 270]; 2) Kekhawatiran lingkungan terkait risiko pembuangan air dingin dan kebocoran fluida yang dapat merusak ekosistem laut[cite: 272]; 3) Status teknologinya yang masih berada di tahap percobaan (pilot) sehingga butuh pembuktian operasional jangka panjang[cite: 274]."
+    },
+    {
+        kategori: "Ocean Energy Conversion for Small Island Resilience",
+        tipe: "pg",
+        pertanyaan: "Berdasarkan peta jalan prospek pengembangannya, pada periode kapankah teknologi energi laut diharapkan mulai memasuki era komersialisasi berkat proyek demonstrasi yang sukses?",
+        pilihan: [
+            "A. 2020 - 2025",
+            "B. 2025 - 2035",
+            "C. 2040 - 2050",
+            "D. 2060 ke atas"
+        ],
+        kunci_jawaban: "B. 2025 - 2035"
+    },
+
+	// === TOPIK: Bauran Energi Terbarukan dan Energi Laut di Indonesia dan dunia ===
+    {
+        kategori: "Bauran Energi Terbarukan dan Energi Laut di Indonesia dan dunia",
+        tipe: "pg",
+        pertanyaan: "Berdasarkan roadmap energi nasional, berapakah target persentase Bauran Energi Baru Terbarukan (EBT) Indonesia yang harus dicapai pada tahun 2060?",
+        pilihan: [
+            "A. 13,9%",
+            "B. 19 - 23%",
+            "C. 50 - 55%",
+            "D. 70 - 72%"
+        ],
+        kunci_jawaban: "D. 70 - 72%"
+    },
+    {
+        kategori: "Bauran Energi Terbarukan dan Energi Laut di Indonesia dan dunia",
+        tipe: "pg",
+        pertanyaan: "Berdasarkan data terbaru, berapakah angka realisasi aktual penggunaan Energi Baru Terbarukan (EBT) di Indonesia pada tahun 2024?",
+        pilihan: [
+            "A. 13,9%",
+            "B. 19,5%",
+            "C. 23%",
+            "D. 41%"
+        ],
+        kunci_jawaban: "A. 13,9%"
+    },
+    {
+        kategori: "Bauran Energi Terbarukan dan Energi Laut di Indonesia dan dunia",
+        tipe: "pg",
+        pertanyaan: "Negara-negara yang telah sukses mencapai nyaris 100% bauran EBT, seperti Albania, Bhutan, dan Paraguay, memiliki kesamaan dalam sumber utama energinya, yaitu...",
+        pilihan: [
+            "A. Mayoritas bergantung pada energi surya (solar panel).",
+            "B. Mayoritas bergantung pada energi hidro (PLTA).",
+            "C. Mayoritas menggunakan reaktor nuklir skala kecil.",
+            "D. Mayoritas memanfaatkan energi angin lepas pantai."
+        ],
+        kunci_jawaban: "B. Mayoritas bergantung pada energi hidro (PLTA)."
+    },
+    {
+        kategori: "Bauran Energi Terbarukan dan Energi Laut di Indonesia dan dunia",
+        tipe: "esai",
+        pertanyaan: "Bandingkan secara singkat mengapa negara seperti Paraguay lebih mudah melakukan transisi menuju 100% EBT dibandingkan dengan Indonesia!",
+        kunci_jawaban: "Negara sukses seperti Paraguay relatif lebih mudah bertransisi karena memiliki sistem kelistrikan yang kecil, populasi/permintaan rendah, dan potensi hidro yang sangat dominan. Sebaliknya, Indonesia menghadapi tantangan karena sistem kelistrikannya sangat besar dan kompleks, masih ada dominasi batubara (DMO), infrastruktur transmisi yang belum merata, serta populasi yang masif sehingga beban sistem kelistrikannya tinggi."
+    },
+    {
+        kategori: "Bauran Energi Terbarukan dan Energi Laut di Indonesia dan dunia",
+        tipe: "pg",
+        pertanyaan: "Pembangkit Listrik Tenaga Pasang Surut (Tidal Power Station) tertua di dunia yang telah beroperasi secara komersial sejak tahun 1966 terletak di negara...",
+        pilihan: [
+            "A. Inggris (Proyek MeyGen)",
+            "B. Prancis (Proyek Rance)",
+            "C. Amerika Serikat (Proyek ORPC)",
+            "D. Australia"
+        ],
+        kunci_jawaban: "B. Prancis (Proyek Rance)"
+    },
+    {
+        kategori: "Bauran Energi Terbarukan dan Energi Laut di Indonesia dan dunia",
+        tipe: "pg",
+        pertanyaan: "Berdasarkan inventarisasi potensi energi laut di Indonesia, teknologi manakah yang diperkirakan memiliki potensi kapasitas paling besar secara teoritis?",
+        pilihan: [
+            "A. Gelombang (Wave) sebesar ~17.9 GW",
+            "B. Pasang Surut (Tidal) sebesar ~19.5 GW",
+            "C. OTEC (Ocean Thermal Energy Conversion) sebesar ~41 GW",
+            "D. Arus Laut Dalam sebesar ~50 GW"
+        ],
+        kunci_jawaban: "C. OTEC (Ocean Thermal Energy Conversion) sebesar ~41 GW"
+    },
+    {
+        kategori: "Bauran Energi Terbarukan dan Energi Laut di Indonesia dan dunia",
+        tipe: "pg",
+        pertanyaan: "Salah satu contoh proyek awal pemanfaatan energi laut di Indonesia yang saat ini sedang dalam tahap perencanaan adalah...",
+        pilihan: [
+            "A. Proyek MeyGen 398 MW di Selat Sunda.",
+            "B. Proyek ORPC di perairan Maluku.",
+            "C. Proyek Rance di muara sungai Kapuas.",
+            "D. Proyek HydroWing berkapasitas 10 MW di Nusa Tenggara Timur (NTT)."
+        ],
+        kunci_jawaban: "D. Proyek HydroWing berkapasitas 10 MW di Nusa Tenggara Timur (NTT)."
+    },
+    {
+        kategori: "Bauran Energi Terbarukan dan Energi Laut di Indonesia dan dunia",
+        tipe: "esai",
+        pertanyaan: "Dalam konteks pemanfaatan Energi Baru Terbarukan (EBT), apa salah satu hambatan terbesar dari sisi regulasi dan kebijakan energi konvensional yang memperlambat laju transisi di Indonesia?",
+        kunci_jawaban: "Salah satu hambatan utama dari sisi kebijakan di Indonesia adalah masih kuatnya dominasi penggunaan batubara yang didukung oleh regulasi Kewajiban Pasokan Domestik (Domestic Market Obligation / DMO), serta tantangan terkait pemenuhan regulasi Tingkat Komponen Dalam Negeri (TKDN)."
+    },
+    {
+        kategori: "Bauran Energi Terbarukan dan Energi Laut di Indonesia dan dunia",
+        tipe: "esai",
+        pertanyaan: "Jelaskan status terkini pengembangan energi laut di Indonesia apabila dikomparasikan dengan negara maju seperti Inggris!",
+        kunci_jawaban: "Di Inggris, pemanfaatan energi laut sudah mencapai tahap komersial dan menjadikan mereka pemimpin dunia di sektor tidal stream (seperti proyek MeyGen). Sedangkan di Indonesia, pemanfaatannya saat ini masih tergolong belum signifikan dan baru berada pada tahap inisiasi atau perencanaan proyek awal."
+    },
+    {
+        kategori: "Bauran Energi Terbarukan dan Energi Laut di Indonesia dan dunia",
+        tipe: "esai",
+        pertanyaan: "Berdasarkan studi komparasi dengan negara yang telah sukses mencapai 100% EBT, sebutkan 3 (tiga) pelajaran strategis yang dapat diterapkan di Indonesia!",
+        kunci_jawaban: "Tiga pelajaran strategis yang dapat diadopsi Indonesia adalah: 1) Fokus pada pengembangan sumber EBT yang paling dominan di suatu wilayah (misalnya PLTA atau arus laut); 2) Menerapkan regulasi yang lebih sederhana dengan dukungan penuh dari pemerintah; dan 3) Membangun infrastruktur jaringan kelistrikan (grid) yang siap dan cerdas untuk menangani sifat variabilitas dari energi terbarukan."
+    }
+];
+
+    // === VARIABEL GLOBAL ===
+    let soalAktif = []; // Menyimpan daftar soal yang sedang dikerjakan
+    let indeksSoal = 0;
+    let jawabanUser = []; // Menyimpan riwayat jawaban user
+    let skorPG = 0;
+    let totalPG = 0;
+
+    // === FUNGSI INIT MENU ===
+    function initMenu() {
+        const menuContainer = document.getElementById('menu-container');
+        // Ambil daftar kategori unik dari database
+        const kategoriUnik = [...new Set(databaseSoal.map(soal => soal.kategori))];
+        
+        kategoriUnik.forEach(kategori => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-outline';
+            btn.innerText = kategori;
+            btn.onclick = () => startQuiz(kategori);
+            menuContainer.appendChild(btn);
         });
     }
 
-    function selectAnswer(selectedButton, correctAnswer) {
-        const buttons = optionsEl.querySelectorAll('.option-btn');
-        buttons.forEach(btn => btn.disabled = true); 
-
-        if (selectedButton.innerText === correctAnswer) {
-            selectedButton.classList.add('correct');
-            score++;
+    // === FUNGSI MULAI KUIS ===
+    function startQuiz(kategoriTerpilih) {
+        if (kategoriTerpilih === 'Semua Topik') {
+            soalAktif = [...databaseSoal];
+            document.getElementById('current-category-text').innerText = "Semua Topik";
+            document.getElementById('score-category-name').innerText = "Semua Topik";
         } else {
-            selectedButton.classList.add('wrong');
-            buttons.forEach(btn => {
-                if (btn.innerText === correctAnswer) {
-                    btn.classList.add('correct');
-                }
-            });
+            soalAktif = databaseSoal.filter(soal => soal.kategori === kategoriTerpilih);
+            document.getElementById('current-category-text').innerText = kategoriTerpilih;
+            document.getElementById('score-category-name').innerText = kategoriTerpilih;
         }
-        nextBtn.style.display = 'block';
+
+        // Reset variabel
+        indeksSoal = 0;
+        jawabanUser = [];
+        skorPG = 0;
+        totalPG = soalAktif.filter(s => s.tipe === 'pg').length;
+
+        // Pindah halaman
+        document.getElementById('home-screen').style.display = 'none';
+        document.getElementById('quiz-screen').style.display = 'block';
+
+        renderSoal();
+    }
+
+    // === FUNGSI TAMPILKAN SOAL ===
+    function renderSoal() {
+        const soal = soalAktif[indeksSoal];
+        
+        // Update Header & Progress
+        document.getElementById('question-counter').innerText = `Soal ${indeksSoal + 1} / ${soalAktif.length}`;
+        const progressPercent = ((indeksSoal) / soalAktif.length) * 100;
+        document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+        
+        // Update Teks Pertanyaan
+        document.getElementById('question-text').innerText = soal.pertanyaan;
+        
+        const answerContainer = document.getElementById('answer-container');
+        answerContainer.innerHTML = ''; // Bersihkan container
+
+        // Render Input Berdasarkan Tipe Soal
+        if (soal.tipe === 'esai') {
+            const textarea = document.createElement('textarea');
+            textarea.className = 'essay-input';
+            textarea.id = 'input-jawaban';
+            textarea.placeholder = 'Ketik jawaban esai Anda di sini...';
+            answerContainer.appendChild(textarea);
+        } else if (soal.tipe === 'pg') {
+            const optionsList = document.createElement('div');
+            optionsList.className = 'options-list';
+            
+            soal.pilihan.forEach((opsi, idx) => {
+                const label = document.createElement('label');
+                label.className = 'option-item';
+                label.onclick = function() {
+                    // Hapus class selected dari semua opsi
+                    document.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
+                    // Tambah class selected ke yang diklik
+                    this.classList.add('selected');
+                };
+                
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'pg_answer';
+                radio.value = opsi;
+                
+                label.appendChild(radio);
+                label.appendChild(document.createTextNode(opsi));
+                optionsList.appendChild(label);
+            });
+            answerContainer.appendChild(optionsList);
+        }
+
+        // Cek apakah ini soal terakhir
+        if (indeksSoal === soalAktif.length - 1) {
+            document.getElementById('btn-next').style.display = 'none';
+            document.getElementById('btn-lihat-hasil').style.display = 'block';
+        } else {
+            document.getElementById('btn-next').style.display = 'block';
+            document.getElementById('btn-lihat-hasil').style.display = 'none';
+        }
+    }
+
+    // === FUNGSI SIMPAN JAWABAN & LANJUT ===
+    function simpanJawaban() {
+        const soal = soalAktif[indeksSoal];
+        let jawaban = "(Tidak dijawab)";
+
+        if (soal.tipe === 'esai') {
+            const input = document.getElementById('input-jawaban').value.trim();
+            if (input !== "") jawaban = input;
+        } else if (soal.tipe === 'pg') {
+            const selectedRadio = document.querySelector('input[name="pg_answer"]:checked');
+            if (selectedRadio) jawaban = selectedRadio.value;
+            
+            // Hitung skor PG secara rahasia di background
+            if (jawaban === soal.kunci_jawaban) {
+                skorPG++;
+            }
+        }
+
+        jawabanUser.push({
+            pertanyaan: soal.pertanyaan,
+            kategori: soal.kategori,
+            tipe: soal.tipe,
+            jawaban_user: jawaban,
+            kunci_jawaban: soal.kunci_jawaban
+        });
     }
 
     function nextQuestion() {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < quizData.length) {
-            loadQuestion();
-        } else {
-            showResult();
-        }
+        simpanJawaban();
+        indeksSoal++;
+        renderSoal();
     }
 
-    function showResult() {
-        quizContent.style.display = 'none';
-        resultContent.style.display = 'block';
-        scoreText.innerText = `Skor Kamu: ${score} / ${quizData.length}`;
+    // === FUNGSI TAMPILKAN HASIL ===
+    function showResults() {
+        simpanJawaban(); // Simpan soal terakhir
+
+        // Pindah halaman
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+
+        // Tampilkan Skor (Hanya untuk PG)
+        let persentase = totalPG > 0 ? Math.round((skorPG / totalPG) * 100) : 0;
+        let teksSkor = `${skorPG}/${totalPG} (${persentase}%)`;
+        
+        document.getElementById('score-text-pg').innerText = teksSkor;
+        document.getElementById('score-text-total').innerText = teksSkor;
+
+        // Tampilkan Review Jawaban
+        const reviewContainer = document.getElementById('review-container');
+        reviewContainer.innerHTML = '';
+
+        jawabanUser.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = 'review-card';
+            
+            // Tandai merah kalau PG salah
+            if (item.tipe === 'pg' && item.jawaban_user !== item.kunci_jawaban) {
+                div.classList.add('wrong-pg');
+            }
+
+            let html = `
+                <div class="review-q">
+                    <span>${idx + 1}. ${item.pertanyaan}</span>
+                    <span class="review-badge">${item.kategori.split(':')[0]}</span>
+                </div>
+                <div class="review-a-title">Jawaban Anda ${item.tipe === 'esai' ? '(Esai)' : '(PG)'}:</div>
+                <div class="review-a-user">${item.jawaban_user.replace(/\n/g, '<br>')}</div>
+                <div class="review-a-title">Kunci Jawaban / Referensi:</div>
+                <div class="review-a-ref">${item.kunci_jawaban}</div>
+            `;
+            div.innerHTML = html;
+            reviewContainer.appendChild(div);
+        });
     }
 
-    loadQuestion();
+    // Jalankan initMenu saat halaman pertama kali dibuka
+    initMenu();
 </script>
 
 </body>
