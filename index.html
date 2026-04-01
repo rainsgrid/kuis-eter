@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Simulasi Energi Laut</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .quiz-container { background-color: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 40px; width: 100%; max-width: 700px; }
+        h2 { color: #0d6efd; margin-bottom: 20px; text-align: center; }
+        .question { font-size: 18px; margin-bottom: 20px; font-weight: 600; color: #333; }
+        .options-container { display: flex; flex-direction: column; gap: 12px; }
+        .option-btn { background-color: #fff; border: 2px solid #dee2e6; color: #495057; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 16px; text-align: left; transition: all 0.2s; }
+        .option-btn:hover { border-color: #0d6efd; background-color: #f8f9fa; }
+        .option-btn.correct { background-color: #198754; color: white; border-color: #198754; }
+        .option-btn.wrong { background-color: #dc3545; color: white; border-color: #dc3545; }
+        #next-btn { margin-top: 25px; background-color: #0d6efd; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 16px; display: none; width: 100%; font-weight: bold; }
+        #next-btn:hover { background-color: #0b5ed7; }
+        .score-text { font-size: 24px; font-weight: bold; color: #333; text-align: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h2>🌊 Simulasi Kuis Energi Laut</h2>
+    <div id="quiz-content">
+        <div class="question" id="question-text">Memuat pertanyaan...</div>
+        <div class="options-container" id="options-container"></div>
+        <button id="next-btn" onclick="nextQuestion()">Selanjutnya</button>
+    </div>
+    <div id="result-content" style="display: none; text-align: center;">
+        <h2>Kuis Selesai! 🎉</h2>
+        <p class="score-text" id="score-text"></p>
+        <button class="option-btn" onclick="location.reload()" style="background-color:#0d6efd; color:white; text-align:center; font-weight:bold; border:none;">Ulangi Kuis</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            "pertanyaan": "Meskipun energi surya dan angin berkembang pesat dalam transisi energi global, mengapa diversifikasi ke arah energi laut tetap menjadi urgensi yang sangat penting?",
+            "pilihan": [
+                "A. Energi surya dan angin memiliki biaya perawatan yang lebih tinggi daripada turbin laut.",
+                "B. Sifat intermitensi dari energi surya dan angin membutuhkan sumber energi lain yang stabil, seperti energi laut berbasis arus.",
+                "C. Pembangkitan listrik rendah karbon dari sektor surya sudah mencapai batas maksimal 40%.",
+                "D. Permintaan listrik dari sektor digital hanya kompatibel dengan output listrik laut."
+            ],
+            "jawaban_benar": "B. Sifat intermitensi dari energi surya dan angin membutuhkan sumber energi lain yang stabil, seperti energi laut berbasis arus."
+        },
+        {
+            "pertanyaan": "Dalam konteks wilayah 3T, pengembangan energi laut tidak hanya berdampak pada aspek lingkungan, tetapi juga ekonomi. Alasan utamanya adalah...",
+            "pilihan": [
+                "A. Membuka lapangan kerja penambangan lepas pantai secara masif.",
+                "B. Mampu menekan biaya listrik tinggi dengan menggantikan PLTD (diesel) yang bahan bakarnya mahal.",
+                "C. Energi laut akan langsung diekspor ke negara tetangga.",
+                "D. Memicu urbanisasi warga kota ke wilayah 3T."
+            ],
+            "jawaban_benar": "B. Mampu menekan biaya listrik tinggi dengan menggantikan PLTD (diesel) yang bahan bakarnya mahal."
+        },
+        {
+            "pertanyaan": "Terkait transisi energi global, mengapa pertumbuhan sektor digital dan kendaraan listrik justru menimbulkan 'ancaman' stabilitas jika hanya mengandalkan surya dan angin?",
+            "pilihan": [
+                "A. Infrastruktur digital tidak kompatibel dengan arus DC.",
+                "B. Lonjakan permintaan membutuhkan suplai 'baseload' yang stabil, sementara surya dan angin bergantung cuaca.",
+                "C. Biaya produksi energi surya lebih mahal dari biaya server.",
+                "D. Energi angin khusus dialokasikan untuk industri berat."
+            ],
+            "jawaban_benar": "B. Lonjakan permintaan membutuhkan suplai 'baseload' yang stabil, sementara surya dan angin bergantung cuaca."
+        },
+        {
+            "pertanyaan": "Implementasi strategis energi laut yang bersinergi dengan sektor perikanan untuk mendukung ekonomi nelayan adalah...",
+            "pilihan": [
+                "A. Mengganti semua kapal dengan mesin turbin.",
+                "B. Pemanfaatan energi laut skala kecil untuk mengamankan listrik mesin pendingin ikan (cold storage).",
+                "C. Pembangunan bendungan raksasa di area tangkapan.",
+                "D. Melatih nelayan menjadi teknisi bawah air."
+            ],
+            "jawaban_benar": "B. Pemanfaatan energi laut skala kecil untuk mengamankan listrik mesin pendingin ikan (cold storage)."
+        },
+        {
+            "pertanyaan": "Mengapa pendekatan desentralisasi energi berbasis laut di wilayah Timur Indonesia lebih logis daripada membangun jaringan kabel laut raksasa antar-pulau?",
+            "pilihan": [
+                "A. Karena laut di Timur terlalu dalam untuk kabel.",
+                "B. Karakteristik selat sempit membuat arus kuat dan stabil, sehingga setiap pulau bisa mandiri energi.",
+                "C. Syarat mutlak dari investor asing.",
+                "D. Untuk mencegah monopoli listrik dari Jawa."
+            ],
+            "jawaban_benar": "B. Karakteristik selat sempit membuat arus kuat dan stabil, sehingga setiap pulau bisa mandiri energi."
+        },
+        {
+            "pertanyaan": "Fenomena fisis utama yang memperkuat aliran Arus Lintas Indonesia (ITF) di kawasan Nusa Tenggara adalah...",
+            "pilihan": [
+                "A. Perbedaan salinitas ekstrem akibat limbah.",
+                "B. Topografi selat sempit yang berfungsi seperti 'corong' hidrodinamika, mempercepat aliran massa air.",
+                "C. Curah hujan tahunan yang tinggi.",
+                "D. Aktivitas vulkanik bawah laut."
+            ],
+            "jawaban_benar": "B. Topografi selat sempit yang berfungsi seperti 'corong' hidrodinamika, mempercepat aliran massa air."
+        },
+        {
+            "pertanyaan": "Jika rekayasa material diabaikan dalam pengembangan turbin laut, risiko operasional tercepat yang akan terjadi adalah...",
+            "pilihan": [
+                "A. Turbin tenggelam karena berat jenis bertambah.",
+                "B. Terjadinya bio-fouling dan korosi parah yang merusak bilah turbin serta menaikkan biaya pemeliharaan.",
+                "C. Material meracuni ikan karang.",
+                "D. Air laut di sekitarnya menjadi panas."
+            ],
+            "jawaban_benar": "B. Terjadinya bio-fouling dan korosi parah yang merusak bilah turbin serta menaikkan biaya pemeliharaan."
+        },
+        {
+            "pertanyaan": "Aplikasi energi biru skala khusus untuk restorasi lingkungan ditunjukkan melalui...",
+            "pilihan": [
+                "A. Pemanasan air untuk membunuh spesies invasif.",
+                "B. Pemanfaatan arus listrik lemah dari energi gelombang untuk memacu akresi kalsium karbonat dalam transplantasi karang.",
+                "C. Menyedot sampah plastik secara otomatis.",
+                "D. Membangkitkan suara untuk mengusir predator karang."
+            ],
+            "jawaban_benar": "B. Pemanfaatan arus listrik lemah dari energi gelombang untuk memacu akresi kalsium karbonat dalam transplantasi karang."
+        },
+        {
+            "pertanyaan": "Pola transisi energi di Nusa Tenggara menuju Net Zero Emission 2050 tergolong unik karena...",
+            "pilihan": [
+                "A. Tidak bertujuan menurunkan emisi industri raksasa, melainkan melompati (leapfrogging) ketergantungan fosil untuk membangun akses listrik.",
+                "B. Diwajibkan menggunakan nuklir sepenuhnya.",
+                "C. Mengimpor listrik bersih dari Australia.",
+                "D. Menutup semua pabrik lokal."
+            ],
+            "jawaban_benar": "A. Tidak bertujuan menurunkan emisi industri raksasa, melainkan melompati (leapfrogging) ketergantungan fosil untuk membangun akses listrik."
+        },
+        {
+            "pertanyaan": "Penerapan konsep hilirisasi industri hijau dalam konteks teknologi energi laut di Indonesia berarti...",
+            "pilihan": [
+                "A. Menjual hak kelola laut ke asing.",
+                "B. Meningkatkan nilai tambah dengan memproduksi turbin dan komponen infrastruktur laut di dalam negeri.",
+                "C. Mengekspor baterai dari air laut.",
+                "D. Hanya berfokus pada ekspor listrik mentah."
+            ],
+            "jawaban_benar": "B. Meningkatkan nilai tambah dengan memproduksi turbin dan komponen infrastruktur laut di dalam negeri."
+        },
+        {
+            "pertanyaan": "Sebelum instalasi turbin arus laut secara masif, apa risiko jika pemodelan hidrodinamika dilewati?",
+            "pilihan": [
+                "A. Penempatan turbin menjadi tidak efisien karena mengabaikan analisis karakteristik arus dan kedalaman.",
+                "B. Harga material anti-korosi melonjak drastis.",
+                "C. Izin AMDAL otomatis ditolak.",
+                "D. Turbin akan dicuri."
+            ],
+            "jawaban_benar": "A. Penempatan turbin menjadi tidak efisien karena mengabaikan analisis karakteristik arus dan kedalaman."
+        },
+        {
+            "pertanyaan": "Apa tonggak krusial yang harus dipenuhi pemerintah sebagai fondasi awal menuju Net Zero Emission?",
+            "pilihan": [
+                "A. Melarang semua kendaraan berbahan bakar minyak.",
+                "B. Mencapai target bauran Energi Baru Terbarukan (EBT) sebesar 23%.",
+                "C. Menghentikan operasi semua PLTU batubara besok pagi.",
+                "D. Mensubsidi penuh listrik untuk kawasan industri."
+            ],
+            "jawaban_benar": "B. Mencapai target bauran Energi Baru Terbarukan (EBT) sebesar 23%."
+        },
+        {
+            "pertanyaan": "Alasan komparatif terkuat yang menjadikan Indonesia berpeluang memimpin teknologi energi laut di Asia Tenggara adalah...",
+            "pilihan": [
+                "A. Anggaran riset kelautan Indonesia terbesar di dunia.",
+                "B. Karakteristik kepulauan dengan ribuan selat yang dilintasi arus samudra permanen memberikan kestabilan energi yang tinggi.",
+                "C. Terbebas sepenuhnya dari ancaman tsunami.",
+                "D. Tidak memiliki laut dalam."
+            ],
+            "jawaban_benar": "B. Karakteristik kepulauan dengan ribuan selat yang dilintasi arus samudra permanen memberikan kestabilan energi yang tinggi."
+        },
+        {
+            "pertanyaan": "Berdasarkan data, konsumsi listrik di Nusa Tenggara masih rendah. Kesimpulan analitis dari data tersebut adalah...",
+            "pilihan": [
+                "A. Masyarakat menolak teknologi terbarukan.",
+                "B. Angka tersebut mencerminkan terbatasnya infrastruktur saat ini, bukan kebutuhan energi yang minim.",
+                "C. Investasi energi laut di sana pasti rugi.",
+                "D. Nusa Tenggara harus fokus ke energi angin saja."
+            ],
+            "jawaban_benar": "B. Angka tersebut mencerminkan terbatasnya infrastruktur saat ini, bukan kebutuhan energi yang minim."
+        },
+        {
+            "pertanyaan": "Penguatan instrumen survei kelautan sangat mutlak diperlukan sebelum implementasi masif energi arus laut karena...",
+            "pilihan": [
+                "A. Tanpa pemetaan presisi dasar laut dan variabilitas musiman, investasi instalasi turbin berisiko gagal teknis.",
+                "B. Untuk memenuhi syarat birokrasi pemerintah daerah.",
+                "C. Alat survei bisa disewakan kembali.",
+                "D. Membantu mencari kapal karam yang memiliki nilai sejarah."
+            ],
+            "jawaban_benar": "A. Tanpa pemetaan presisi dasar laut dan variabilitas musiman, investasi instalasi turbin berisiko gagal teknis."
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    const questionEl = document.getElementById('question-text');
+    const optionsEl = document.getElementById('options-container');
+    const nextBtn = document.getElementById('next-btn');
+    const quizContent = document.getElementById('quiz-content');
+    const resultContent = document.getElementById('result-content');
+    const scoreText = document.getElementById('score-text');
+
+    function loadQuestion() {
+        const currentQuiz = quizData[currentQuestionIndex];
+        questionEl.innerText = `${currentQuestionIndex + 1}. ${currentQuiz.pertanyaan}`;
+        optionsEl.innerHTML = '';
+        nextBtn.style.display = 'none';
+
+        currentQuiz.pilihan.forEach(pilihan => {
+            const button = document.createElement('button');
+            button.innerText = pilihan;
+            button.classList.add('option-btn');
+            button.onclick = () => selectAnswer(button, currentQuiz.jawaban_benar);
+            optionsEl.appendChild(button);
+        });
+    }
+
+    function selectAnswer(selectedButton, correctAnswer) {
+        const buttons = optionsEl.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.disabled = true); 
+
+        if (selectedButton.innerText === correctAnswer) {
+            selectedButton.classList.add('correct');
+            score++;
+        } else {
+            selectedButton.classList.add('wrong');
+            buttons.forEach(btn => {
+                if (btn.innerText === correctAnswer) {
+                    btn.classList.add('correct');
+                }
+            });
+        }
+        nextBtn.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < quizData.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        quizContent.style.display = 'none';
+        resultContent.style.display = 'block';
+        scoreText.innerText = `Skor Kamu: ${score} / ${quizData.length}`;
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
